@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="71036b0a-a5cd-4c86-806c-436987ac2e5b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/PythonLists.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonTuples.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonTuples.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,11 +31,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PythonLists.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="390">
               <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/PythonTuples.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="333">
+              <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
             </state>
           </provider>
         </entry>
@@ -60,12 +69,13 @@
         <option value="$PROJECT_DIR$/2 задачи Python continue/break/else.py" />
         <option value="$PROJECT_DIR$/PythonContinueBreakElse.py" />
         <option value="$PROJECT_DIR$/PythonLists.py" />
+        <option value="$PROJECT_DIR$/PythonTuples.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-15" />
-    <option name="y" value="-15" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-10" />
+    <option name="y" value="35" />
     <option name="width" value="1938" />
     <option name="height" value="2120" />
   </component>
@@ -94,7 +104,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/PythonLists.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/PythonTuples.py" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -108,7 +118,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.PythonLists">
+  <component name="RunManager" selected="Python.PythonTuples">
     <configuration name="PythonFor" type="PythonConfigurationType" factoryName="Python">
       <module name="PythonTraining" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -130,7 +140,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="PythonLists" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="PythonTuples" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PythonTraining" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -142,7 +152,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PythonLists.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PythonTuples.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -194,7 +204,7 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.PythonLists" />
+      <item itemvalue="Python.PythonTuples" />
       <item itemvalue="Python.elseBreak" />
       <item itemvalue="Python.PythonFor" />
       <item itemvalue="Python.PythonWhile" />
@@ -237,7 +247,21 @@
       <option name="project" value="LOCAL" />
       <updated>1633296871066</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="4 задачи lists + examples">
+      <created>1633438213733</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1633438213733</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Tuples 3 задачи">
+      <created>1633438769359</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1633438769359</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView">
@@ -250,15 +274,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
-    <editor active="true" />
+    <frame x="-4" y="14" width="775" height="848" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.04227213" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.08648649" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33239037" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32729805" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.40076825" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -276,7 +299,9 @@
     <MESSAGE value="3 задачи 3 урока на циклы while" />
     <MESSAGE value="3 задачи 4 урока на циклы for" />
     <MESSAGE value="2 задачи 5 урока на continue/break/else" />
-    <option name="LAST_COMMIT_MESSAGE" value="2 задачи 5 урока на continue/break/else" />
+    <MESSAGE value="4 задачи lists + examples" />
+    <MESSAGE value="Tuples 3 задачи" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tuples 3 задачи" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -310,6 +335,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/PythonLists.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PythonContinueBreakElse.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="636">
@@ -317,10 +349,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PythonLists.py">
+    <entry file="file://$PROJECT_DIR$/PythonTuples.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+        <state relative-caret-position="333">
+          <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
         </state>
       </provider>
     </entry>
