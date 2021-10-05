@@ -17,17 +17,17 @@ if sum_1 > sum_2:
 s = min(A)
 print(s)
 
-min = 10000
-number = -1
-for i in A:
-    if i < min:
-        index = number + 1
-        min = i
-    number += 1
-print(index)
+minimum = 10000
+index = 0
+for i in range(0, len(A)):
+    if A[i] < minimum:
+        minimum = A[i]
+        index = i
+print("ghv", index)
 
 min2 = 10000
 number2 = -1
+index2 = 0
 for l in B:
     if l < min2:
         index2 = number2 + 1
