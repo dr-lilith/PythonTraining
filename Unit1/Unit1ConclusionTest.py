@@ -26,8 +26,6 @@ elif len(even) > len(odd):
 else:
     print("Количество четных и нечетных цифр равно")
 
-
-
 # TASK 2
 # С клавиатуры вводится текст с пробелами, но без знаков препинания. Определить, сколько в нём гласных, а сколько
 # согласных. В случае равенства вывести на экран все гласные буквы.
@@ -46,8 +44,6 @@ print("Гласных: ", len(vowelsInText), "   Cогласных: ", consonant
 if len(vowelsInText) == consonantsInText:
     print(vowelsInText)
 
-
-
 # TASK 3
 # Вводится 2 числа с клавиатуры (от 1 до 20). Так же генерируется 2 числа рандомно.
 # Посчитать, сколько раз сумма чисел, введенных с клавиатуры окажется больше
@@ -56,6 +52,7 @@ if len(vowelsInText) == consonantsInText:
 
 print('TASK 3: ')
 import random
+
 attempt = 1
 win = 0
 while attempt < 8:
@@ -73,8 +70,6 @@ print("Введенная пара чисел оказалась больше р
 if win >= 4:
     print(a, b)
 
-
-
 # TASK 4
 # Посчитать, сколько раз встречается определенная цифра в числах. Количество
 # введенных чисел и искомая цифра задаются с клавиатуры. Числа выбираются
@@ -82,6 +77,7 @@ if win >= 4:
 
 print('TASK 4: ')
 import random
+
 amount = int(input("Введите количество случайных чисел:"))
 digit = int(input("Введите искомую цифру в них: "))
 attempt = 1
@@ -97,8 +93,6 @@ while attempt <= amount:
     attempt += 1
 print("Введенная цифра встретилась {} раз".format(count))
 
-
-
 # TASK 5
 # Вводится строка, содержащая буквы, целые неотрицательные цифры и иные символы.
 # Требуется все цифры, которые встречаются в строке отдельно вывести на экран. Строка
@@ -111,8 +105,6 @@ for i in text:
     if i.isdigit():
         numbers.append(i)
 print(numbers)
-
-
 
 # TASK 6
 # Даны два списка, состоящих из чисел и строк. Выведите список чисел из обоих списков, отсортированный по убыванию,
@@ -130,8 +122,6 @@ print(d)
 print("длинна списка = {0} элементов".format(len(d)))
 d.sort(reverse=True)
 print(d)
-
-
 
 # TASK 7
 # Посчитать, сколько пар (стоят рядом) верхнего и нижнего регистра находится в
@@ -154,17 +144,62 @@ for l in word:
         if l == i:
             vowelsInText.append(i)
 consonantsInText = len(word) - len(vowelsInText)
-print(f"Гласных: {len(vowelsInText)}; Согласных : {consonantsInText}, Длина слова: {len(word)}, Пар одного регистра: {pair}")
-
-
+print(
+    "Гласных: {}; Согласных : {}, Длина слова: {}, Пар одного регистра: {}".format(len(vowelsInText), consonantsInText,
+                                                                                   len(word), pair))
 
 # TASK 8
+# Расположить числа от 10 до 21 и наоборот таким образом:
+# 10 11 12 13                      21 20 19 18
+# 14 15 16 17           и          17 16 15 14
+# 18 19 20 21                      13 12 11 10
+# Вывести на экран суммы всех строк и столбцов.
+print('TASK 8: ')
+numberList = [[10, 11, 12, 13], [14, 15, 16, 17], [18, 19, 20, 21]]
+print(numberList, type(numberList))
+for i in range(3):
+    for j in range(4):
+        print(numberList[i][j], end=" ")
+    print()
+print("row sums:")
+for i in range(3):
+    s = 0
+    for j in range(4):
+        s = s + numberList[i][j]
+    print(s)
+
+print("column sums:")
+for i in range(4):
+    s = 0
+    for j in range(3):
+        s = s + numberList[j][i]
+    print(s)
+
+print('pause')
+for i in range(2, -1, -1):
+    for j in range(3, -1, -1):
+        print(numberList[i][j], end=" ")
+    print()
+print("row sums:")
+for i in range(2, -1, -1):
+    s = 0
+    for j in range(3, -1, -1):
+        s = s + numberList[i][j]
+    print(s)
+print("column sums:")
+for i in range(3, -1, -1):
+    s = 0
+    for j in range(2, -1, -1):
+        s = s + numberList[j][i]
+    print(s)
+
+# TASK 9
 # Вывести на экран все совершенные числа от 1 до 10000.
 # Соверше́нное число́ — натуральное число, равное сумме всех своих собственных делителей
 # (то есть всех положительных делителей, отличных от самого́ числа). Например, число 6 равно сумме своих собственных
 # делителей 1 + 2 + 3.
 
-print('TASK 8: ')
+print('TASK 9: ')
 for i in range(2, 10000):
     f = 0
     for j in range(1, int(i // 2) + 1):
@@ -173,15 +208,13 @@ for i in range(2, 10000):
     if f == i:
         print(i)
 
-
-
-# TASK 9
+# TASK 10
 # Создайте словарь, связав его с переменной school, и наполните данными, которые бы отражали количество учащихся в разных
 # классах (1а, 1б, 2б, 6а, 7в и т. п.). Внесите изменения в словарь согласно следующему: а) в одном из классов изменилось
 # количество учащихся, б) в школе появился новый класс, с) в школе был расформирован (удален) другой класс. Вычислите
 # общее количество учащихся в школе. Отсортируйте классы по возрастанию. Выведите в формате класс - количество учащихся
 
-print('TASK 9: ')
+print('TASK 10: ')
 school = dict(zip(['1a', '1b', '2b', '5a', '6b', '7a'], [12, 19, 25, 24, 26, 20]))
 print(school)
 school['1a'] = 10
