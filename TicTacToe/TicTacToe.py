@@ -11,16 +11,16 @@ def game():
           str(c[3][2]), str(c[3][3]))
 
 
-def parse_coord(coord: str):
-    if not coord[0].isalpha():
+def parse_coord(str_coord: str) -> ():
+    if not str_coord[0].isalpha():
         return None
-    if not coord[1].isnumeric():
+    if not str_coord[1].isnumeric():
         return None
-    if len(coord) != 2:
+    if len(str_coord) != 2:
         return None
     x_letter_mapping = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
-    x = x_letter_mapping.index(coord[0]) + 1
-    y = int(coord[1])
+    x = x_letter_mapping.index(str_coord[0]) + 1
+    y = int(str_coord[1])
     return x, y
 
 
@@ -46,8 +46,24 @@ def switch_player():
         current_player = " + "
 
 
+def validate_input(coord: ()) -> bool:
+    if not coord:
+        return False
+    x, y = coord
+    if c[x][y] == " * ":
+        return True
+    return False
+
+
 while True:
-    x, y = parse_coord(input(f"Текущий игрок:{current_player}. Ваш ход: "))
+    parse_res = None
+    while not parse_res:
+        parse_res = parse_coord(input(f"Текущий игрок:{current_player}. Ваш ход: "))
+        if not validate_input(parse_res):
+            print("Неверный ввод, повторите попытку.")
+            parse_res = None
+
+    x, y = parse_res
     c[x][y] = current_player
     game()
     if check_victory():
