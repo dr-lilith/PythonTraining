@@ -11,52 +11,17 @@ def game():
           str(c[3][2]), str(c[3][3]))
 
 
-def first():
-    if hod1[0] == "a":
-        if hod1[1] == '1':
-            c[1][1] = ' + '
-        elif hod1[1] == '2':
-            c[1][2] = ' + '
-        elif hod1[1] == '3':
-            c[1][3] = ' + '
-    elif hod1[0] == "b":
-        if hod1[1] == '1':
-            c[2][1] = ' + '
-        elif hod1[1] == '2':
-            c[2][2] = ' + '
-        elif hod1[1] == '3':
-            c[2][3] = ' + '
-    elif hod1[0] == "c":
-        if hod1[1] == '1':
-            c[3][1] = ' + '
-        elif hod1[1] == '2':
-            c[3][2] = ' + '
-        elif hod1[1] == '3':
-            c[3][3] = ' + '
-
-
-def second():
-    if hod2[0] == "a":
-        if hod2[1] == '1':
-            c[1][1] = ' o '
-        elif hod2[1] == '2':
-            c[1][2] = ' o '
-        elif hod2[1] == '3':
-            c[1][3] = ' o '
-    elif hod2[0] == "b":
-        if hod2[1] == '1':
-            c[2][1] = ' o '
-        elif hod2[1] == '2':
-            c[2][2] = ' o '
-        elif hod2[1] == '3':
-            c[2][3] = ' o '
-    elif hod2[0] == "c":
-        if hod2[1] == '1':
-            c[3][1] = ' o '
-        elif hod2[1] == '2':
-            c[3][2] = ' o '
-        elif hod2[1] == '3':
-            c[3][3] = ' o '
+def parse_coord(coord: str):
+    if not coord[0].isalpha():
+        return None
+    if not coord[1].isnumeric():
+        return None
+    if len(coord) != 2:
+        return None
+    x_letter_mapping = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+    x = x_letter_mapping.index(coord[0]) + 1
+    y = int(coord[1])
+    return x, y
 
 
 def check_victory():
@@ -70,15 +35,21 @@ def check_victory():
 
 game()
 
-while True:
-    hod1 = input("Игрок номер 1, вы играете крестиками 'x'. Ваш ход: ")
-    first()
-    game()
-    if check_victory():
-        break
-    hod2 = input("Игрок номер 2, вы играете ноликами 'o'. Ваш ход: ")
-    second()
-    game()
-    if check_victory():
-        break
+current_player = " + "
 
+
+def switch_player():
+    global current_player
+    if current_player == " + ":
+        current_player = " o "
+    else:
+        current_player = " + "
+
+
+while True:
+    x, y = parse_coord(input(f"Текущий игрок:{current_player}. Ваш ход: "))
+    c[x][y] = current_player
+    game()
+    if check_victory():
+        break
+    switch_player()
