@@ -1,8 +1,9 @@
 import sys
 import datetime
-from users import users
+
+# from users import users
 # from tasks import tasks
-from CRUD import tasks
+# from CRUD import tasks
 
 user_id = 0
 users_list = []
@@ -27,34 +28,7 @@ def welcome():
 
 class User:
 
-    def search_user(user_name):
-        global users
-        for user in users:
-            if user != user_name:
-                continue
-            else:
-                return True
-
-    def update_user(user_name, update_user_name):
-        global users
-        if user_name in users:
-            index = users.index(user_name)
-            users[index] = update_user_name
-        else:
-            print('User is not exist in users list')
-
-    def delete_users(user_name):
-        global users
-        if user_name in users:
-            users.remove(user_name)
-        else:
-            print('User is not in users list')
-
     def __init__(self, name, password, company, email, position, time_of_creation, urole):
-        # if user not in users:
-        #     users.append(user)
-        # else:
-        #     print('User already is in the user \'s list')
         self.name = name
         self.password = password
         self.company = company
@@ -184,7 +158,54 @@ def user_account(user: User):
     if menu == 'W':
         work_on_task(tasks_for_user, user)
     if menu == 'C':
-        
+        change_user_information(user)
+        overwriting_users_information()
+        user_account(user)
+    if menu == 'L':
+        return welcome()
+    if menu == 'D':
+        user_object_list.remove(user)
+        del user
+        overwriting_users_information()
+
+
+def change_user_information(user):
+    print(f'Current user information: \n[N]ame   -   {user.name}\n[PA]ssword   -   ', len(user.password) * '*',
+          f'\n[C]ompany   -   {user.company}\n[E]mail   -   {user.email}\n[PO]sition   -   {user.position}'
+          f'\n[R]ole   -   {user.role}\nTime of creation   -   {user.time_of_creation} (immutable parameter)')
+    choice = input('Input first letter(s) of parameter you want to change ( n / pa / c / e / po / r )').upper()
+    if choice == 'N':
+        name = input('Input the new USER name: ')
+        user.name = name
+    if choice == 'PA':
+        old_password = user_password = ''
+        user_password2 = ' '
+        while old_password != user.password:
+            old_password = input('In order to change password, input your PASSWORD or exit to return: ')
+            if old_password == 'exit':
+                return user_account(user)
+            while user_password != user_password2:
+                user_password = input('Input your new password: ')
+                user_password2 = input('Repeat your new password: ')
+                if user_password != user_password2:
+                    print('Passwords mismatch. Try again.')
+            user.password = user_password
+            overwriting_users_information()
+            user_account(user)
+    if choice == 'C':
+        company = input('Input the new USER company: ')
+        user.company = company
+    if choice == 'E':
+        email = input('Input the new USER email: ')
+        user.email = email
+    if choice == 'PO':
+        position = input('Input the new USER position: ')
+        user.position = position
+    if choice == 'R':
+        role = ''
+        while role != '1' and role != '2':
+            role = input('Input the new USER role: 1 - user or 2 - admin')
+            user.role = role
 
 
 def work_on_task(tasks_for_user, user):
@@ -200,7 +221,7 @@ def work_on_task(tasks_for_user, user):
         choice1 = input(f'Title: {tasks_for_user[choice].title} \nDescription: {tasks_for_user[choice].description} \n'
                         f'Task status: {tasks_for_user[choice].status} \nCreation_time : '
                         f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter} \n'
-                        f'Do you want to change the status of this task? (input y to change the status or n to return '
+                        f'Do you want to change the status of this task? (input Y to change the status or N to return '
                         f'back): ')
     choice1 = choice1.upper()
     if choice1 == 'Y':
@@ -218,6 +239,15 @@ def work_on_task(tasks_for_user, user):
     #         print(task)
 
 
+# user_object_list.append(self)
+#         users_list.append(name)
+#         with open('saved_users.txt', mode="a") as saved_users:
+#             for item in [self.name, self.password, self.company, self.email, self.position, self.time_of_creation,
+#                          str(self.role)]:
+#                 saved_users.write("%s " % item)
+#             saved_users.write('\n')
+
+
 def overwriting_users_information():
     with open('saved_users.txt', "w") as saved:
         for user in user_object_list:
@@ -225,6 +255,7 @@ def overwriting_users_information():
                          str(user.role)]:
                 saved.write("%s " % item)
             saved.write('\n')
+    print('Information successfully updated.')
 
 
 def overwriting_tasks_information():
@@ -234,18 +265,6 @@ def overwriting_tasks_information():
                          task.assignee]:
                 saved.write("%s " % item)
             saved.write('\n')
-
-
-# with open('saved_tasks.txt', mode="a") as saved_tasks:
-#     print(saved_tasks)
-#     for item in [self.title, self.description, self.reporter, self.assignee]:
-#         saved_tasks.write("%s " % item)
-# with open('saved_tasks.txt', mode="a") as saved_tasks:
-#     saved_tasks.write('\n')
-
-
-# lst_users()
-# lst_users()
 
 
 class Task:
@@ -258,11 +277,6 @@ class Task:
         task_id += 1
         self.reporter = reporter
         self.status = status
-        # created
-        # accepted
-        # inprogress
-        # completed
-
         self.assignee = assignee
         task_object_list.append(self)
         tasks_list.append(self.id)
@@ -332,14 +346,21 @@ if __name__ == '__main__':
     creating_from_file('saved_tasks.txt', Task)
     creating_from_file('saved_users.txt', User)
     # create_task()
-
     # create_user()
-
     welcome()
 
-    # def search_by_user(self):
+# TASK1 kuhyjmbgtf 22.01.22 completed Ivan Irina
+# TASK2 jhmnhgbfvd 24.01.22 completed Ivan Alex
+# TASK3 jmnhbgf 25.01.22 completed Andrew Ivan
+# TASK4 mjhbgfvd 27.01.22 inprogress Andrew Irina
+# TASK5 jkyujtrhbfrvdc 28.01.22 inprogress Alex Irina
+# TASK6 k,jhmuyhngbftrfvdcs 29.01.22 inprogress Ivan Irina
+# TASK7 mjyunhtrgvcew 01.02.22 created Ivan Irina
 #
 #
-# tsk = Task("title", "desc", None, None)
-# cnt = EntityContainer()
-# cnt.add(tsk)
+#
+#
+# Ivan 111 iTechArt ivan@gmail.com Softwareengineer 06.09.20 2
+# Alex 111 iTechArt alex@gmail.com Dataengineer 25.07.21 2
+# Irina 1111 iTechArt irina@gmail.com trainee 20.01.22 1
+# Andrew 111 iTechArt andrew@gmail.com Dataengineer 21.01.22 2
