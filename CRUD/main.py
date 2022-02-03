@@ -1,9 +1,8 @@
 import sys
 import datetime
+import pickle
+import os
 
-# from users import users
-# from tasks import tasks
-# from CRUD import tasks
 
 user_id = 0
 users_list = []
@@ -12,18 +11,39 @@ task_id = 0
 tasks_list = []
 task_object_list = []
 
-
 def welcome():
-    print('WELCOME TO MY LITTLE TRAINEE \'JIRA\' :)\n', '*' * 40)
-    command = input(('Log in to use the program\n[C]reate user\n[L]ogin')).upper()
-    while command != 'C' and command != 'L':
-        command = input('Input the right command: C - create or L - login')
+    print('WELCOME TO MY LITTLE TRAINEE \'JIRA\' :)\n', '*' * 40,
+          '\nTo select, enter the first letter of the selected command')
+    command = input(('Log in to use the program\n[C]reate user\n[L]ogin\n[V]iew common statistics')).upper()
+    while command != 'C' and command != 'L' and command != 'V':
+        command = input('Input the right command: C - create,  L - login or V - view common statistics')
         command = command.upper()
     if command == 'C':
         create_user()
         print(users_list)
-    elif command == 'L':
+    if command == 'L':
         login()
+    if command == 'V':
+        inprogrrss_count = 0
+        for task in task_object_list:
+            if task.status == 'inprogress':
+                inprogrrss_count += 1
+        list_assignee = []
+        dict_assignee = {}
+        for task in task_object_list:
+            if task.status == 'completed':
+                list_assignee.append(task.assignee)
+        for user in user_object_list:
+            dict_assignee[user.name] = list_assignee.count(user.name)
+        leader = max(dict_assignee.values())
+        for key in dict_assignee:
+            if dict_assignee[key] == leader:
+                leader = key
+
+
+        print('Number of users   -   ', len(user_object_list), '\nTotal number of tasks   -   ', len(task_object_list),
+              '\nNumber of “in progress” tasks   -   ', inprogrrss_count,
+              '\nTop user with the biggest number of completed tasks   -   ', leader)
 
 
 class User:
@@ -315,21 +335,34 @@ def create_task():
     return task_object
 
 
-class Repository:
-    def init(self, list: list):
-        self._list = list
+# class Repository:
+#
+#     @staticmethod
+#     def _file_name(entity_type: type):
+#         return f'{entity_type}Repository'
+#
+#     def __init__(self, entity_type: type):
+#         self._container = []
+#         self._entity_type = entity_type
+#
+#     def add(self, entity):
+#         self._container.append(entity)
+#
+#     def save(self):
+#         with open(Repository._file_name(self._entity_type), mode="wb") as saved_data:
+#             pickle.dump(self, saved_data)
+#
+#     @staticmethod
+#     def load(entity_type: type):
+#         if not os.path.exists(Repository._file_name(entity_type)):
+#             return Repository(entity_type)
+#
+#         with open(Repository._file_name(entity_type), mode="rb") as loaded_data:
+#             return pickle.load(loaded_data)
+#
+#     def search(self, filter) -> []:
+#         return self._container
 
-    def add(self, entity):
-        self._list.append(entity)
-
-    def save(self):
-        pass
-
-    def load(self):
-        pass
-
-    def search(self, filter) -> Task:
-        pass
 
 
 def creating_from_file(filename: str, classname):
@@ -341,8 +374,13 @@ def creating_from_file(filename: str, classname):
         args = string.split()
         args[0] = classname(*args)
 
-
 if __name__ == '__main__':
+    # users = Repository.load(type(User))
+    # users.add(User("Test", "Test", "Test", "Test", "Test", datetime.datetime.utcnow(), 1))
+    #tasks = Repository.load(type(Task))
+    # users.save()
+
+
     creating_from_file('saved_tasks.txt', Task)
     creating_from_file('saved_users.txt', User)
     # create_task()
