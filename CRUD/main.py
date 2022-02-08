@@ -1,17 +1,18 @@
 import sys
 import datetime
 import os
+import enum
+from users import *
+import uuid
 
-
-user_id = 0
 users_list = []
 user_object_list = []
-task_id = 0
+task_id: int = 0
 tasks_list = []
 task_object_list = []
 
 
-def welcome():
+def welcome() -> None:
     print('WELCOME TO MY LITTLE TRAINEE \'JIRA\' :)\n', '*' * 40,
           '\nTo select, input the first letter of the selected command')
     command = input('Log in to use the program\n[C]reate user\n[L]ogin\n[V]iew common statistics\n').upper()
@@ -34,7 +35,10 @@ def welcome():
                 list_assignee.append(task.assignee)
         for user in user_object_list:
             dict_assignee[user.name] = list_assignee.count(user.name)
-        leader = max(dict_assignee.values())
+        try:
+            leader = max(dict_assignee.values())
+        except ValueError:
+            leader = 'no top user'
         for key in dict_assignee:
             if dict_assignee[key] == leader:
                 leader = key
@@ -44,28 +48,33 @@ def welcome():
         welcome()
 
 
+class Role(enum.Enum):
+    user = 1
+    admin = 2
+
+
 class User:
 
-    def __init__(self, name, password, company, email, position, time_of_creation, urole):
+    def __init__(self, name, password, company, email, position, time_of_creation, urole) -> None:
         self.name = name
         self.password = password
         self.company = company
         self.email = email
         self.position = position
         self.time_of_creation = time_of_creation
-        self.role = urole
-        global user_id
-        self.id = user_id
-        user_id += 1
+        self.role = int(urole)
+        self.id = uuid.uuid4()
         user_object_list.append(self)
         users_list.append(name)
         with open('saved_users.txt', mode="a") as saved_users:
             for item in [self.name, self.password, self.company, self.email, self.position, self.time_of_creation,
                          str(self.role)]:
-                saved_users.write("%s " % item)
-            saved_users.write('\n')
+                saved_users.write(f'{item} ')
 
-    def __repr__(self):
+            saved_users.write('\n')
+        personal_tasks(self)
+
+    def __repr__(self) -> str:
         return self.name
 
     def create_task(self):
@@ -81,8 +90,8 @@ class User:
         return task_object
 
 
-def create_user():
-    def _get_user_field(field_name):
+def create_user() -> None:
+    def _get_user_field(field_name) -> str:
         field = None
 
         while not field:
@@ -92,7 +101,7 @@ def create_user():
                     field = field.replace(i, '')
         return field
 
-    def _get_user_password():
+    def _get_user_password() -> str:
         user_password = None
         while not user_password:
             user_password = input('What is the user password? ')
@@ -113,7 +122,11 @@ def create_user():
     time_of_creation = datetime.datetime.utcnow()
     urole = None
     while not urole:
-        urole = int(input('Input the role: 1 - user  2 - admin'))
+        input_role = int(input('Input the role: 1 - user  2 - admin'))
+        if input_role == 1:
+            urole = Role.user.value
+        if input_role == 2:
+            urole = Role.admin.value
 
     name = User(name, password, company, email, position, time_of_creation, urole)
     return welcome()
@@ -131,7 +144,7 @@ def login():
     return check_credentials(user_name, user_password)
 
 
-def check_credentials(user_name, user_password):
+def check_credentials(user_name, user_password) -> None:
     for user in user_object_list:
         if user.name == user_name and user.password == user_password:
             print(f'You\'ve successfully logged in! Welcome, {user.name} :)')
@@ -162,24 +175,26 @@ def account(user: User):
         if task[-1] == user.name:
             task_for_user += 1
             tasks_for_user.append(task_object_list[count])
-        if user.role == '2':
+        print(user.role, type(user.role))
+        print(Role.admin, type(Role.admin))
+        if user.role == Role.admin.value:
             if task[-2] == user.name:
                 task_by_user += 1
                 tasks_by_user.append(task_object_list[count])
-    if user.role == '2':
+    if user.role == Role.admin.value:
         print(f'{user.name}, you have created {task_by_user} task(s): ')
         for task in tasks_by_user:
             print(task)
     print(f'{user.name}, you have {task_for_user} task(s): ')
     for task in tasks_for_user:
         print(task)
-    if user.role == '1':
+    if user.role == Role.user.value:
         return user_account(user, tasks_for_user)
-    if user.role == '2':
+    if user.role == Role.admin.value:
         return admin_account(user, tasks_by_user, tasks_for_user)
 
 
-def user_account(user: User, tasks_for_user):
+def user_account(user: User, tasks_for_user) -> None:
     menu = input(f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [W]ork on a task\n   -   [C]hange USER information\n'
                  f'   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter (w/c/l/d): ').upper()
     if menu == 'W':
@@ -196,7 +211,7 @@ def user_account(user: User, tasks_for_user):
         overwriting_users_information()
 
 
-def admin_tasks(user: User, tasks_by_user, tasks_for_user):
+def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
     print(tasks_by_user, type(tasks_by_user))
     menu = input(' - [V]iew task\n - [E]dit task\n - [D]elete task\nInput the first letter:  ').upper()
     if menu == 'V':
@@ -251,7 +266,7 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user):
         return admin_account(user, tasks_by_user, tasks_for_user)
 
 
-def after_admin_editing(user, tasks_by_user, tasks_for_user, choice):
+def after_admin_editing(user, tasks_by_user, tasks_for_user, choice) -> None:
     overwriting_tasks_information()
     print(f'INFORMATION UPDATED.\nTitle: {tasks_by_user[choice].title} \nDescription: '
           f'{tasks_by_user[choice].description} \nTask status: {tasks_by_user[choice].status} \nReporter: '
@@ -259,7 +274,7 @@ def after_admin_editing(user, tasks_by_user, tasks_for_user, choice):
     admin_account(user, tasks_by_user, tasks_for_user)
 
 
-def admin_account(user: User, tasks_by_user, tasks_for_user):
+def admin_account(user: User, tasks_by_user, tasks_for_user) -> None:
     menu = input(
         f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [M]y created tasks\n   -   [W]ork on a task\n   -   [C]hange USER '
         f'information\n   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter '
@@ -280,7 +295,7 @@ def admin_account(user: User, tasks_by_user, tasks_for_user):
         overwriting_users_information()
 
 
-def change_user_information(user):
+def change_user_information(user) -> None:
     print(f'Current user information: \n[N]ame   -   {user.name}\n[PA]ssword   -   ', len(user.password) * '*',
           f'\n[C]ompany   -   {user.company}\n[E]mail   -   {user.email}\n[PO]sition   -   {user.position}'
           f'\n[R]ole   -   {user.role}\nTime of creation   -   {user.time_of_creation} (immutable parameter)')
@@ -314,12 +329,24 @@ def change_user_information(user):
         user.position = position
     if choice == 'R':
         role = ''
-        while role != '1' and role != '2':
-            role = input('Input the new USER role: 1 - user or 2 - admin')
-            user.role = role
+        while role != 1 and role != 2:
+            role = int(input('Input the new USER role: 1 - user or 2 - admin'))
+            urole = None
+            if role == 1:
+                urole = Role.user.value
+            if role == 2:
+                urole = Role.admin.value
+            user.role = urole
 
 
-def work_on_task(tasks_for_user, user):
+def personal_tasks(self) -> None:
+    my_tasks = []
+    for task in task_object_list:
+        if task.assignee == self.name:
+            my_tasks.append(task)
+
+
+def work_on_task(tasks_for_user, user) -> None:
     choice = None
     while choice == None:
         try:
@@ -345,7 +372,7 @@ def work_on_task(tasks_for_user, user):
         account(user)
 
 
-def overwriting_users_information():
+def overwriting_users_information() -> None:
     with open('saved_users.txt', "w") as saved:
         for user in user_object_list:
             for item in [user.name, user.password, user.company, user.email, user.position, user.time_of_creation,
@@ -355,7 +382,7 @@ def overwriting_users_information():
     print('Information successfully updated.')
 
 
-def overwriting_tasks_information():
+def overwriting_tasks_information() -> None:
     with open('saved_tasks.txt', "w") as saved:
         for task in task_object_list:
             for item in [task.title, task.description, task.time_of_creation, task.status, task.reporter,
@@ -365,12 +392,12 @@ def overwriting_tasks_information():
 
 
 class Task:
-    def __init__(self, title, description, time_of_creation, status, reporter, assignee):
+    def __init__(self, title, description, time_of_creation, status, reporter, assignee) -> None:
         self.title = title
         self.description = description
         self.time_of_creation = time_of_creation
         global task_id
-        self.id = task_id
+        self.id = uuid.uuid4()
         task_id += 1
         self.reporter = reporter
         self.status = status
@@ -380,15 +407,15 @@ class Task:
         with open('saved_tasks.txt', mode="a") as saved_tasks:
             for item in [self.title, self.description, self.time_of_creation, self.status, self.reporter,
                          self.assignee]:
-                saved_tasks.write("%s " % item)
+                saved_tasks.write(f'{item} ')
         with open('saved_tasks.txt', mode="a") as saved_tasks:
             saved_tasks.write('\n')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.title
 
 
-def create_task():
+def create_task() -> Task:
     global task_id
     task_object = 'task' + str(task_id)
     task_id += 1
@@ -412,14 +439,15 @@ def create_task():
     return task_object
 
 
-def creating_from_file(filename: str, classname):
-    with open(filename) as saved:
-        saved_from_file = saved.readlines()
-    saved_from_file = list(map(lambda s: s.strip(), saved_from_file))
-    open(filename, "w").close()
-    for string in saved_from_file:
-        args = string.split()
-        args[0] = classname(*args)
+def creating_from_file(filename: str, classname) -> None:
+    if os.path.exists(filename):
+        with open(filename) as saved:
+            saved_from_file = saved.readlines()
+        saved_from_file = list(map(lambda s: s.strip(), saved_from_file))
+        open(filename, "w").close()
+        for string in saved_from_file:
+            args = string.split()
+            args[0] = classname(*args)
 
 
 if __name__ == '__main__':
