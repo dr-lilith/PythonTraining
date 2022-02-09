@@ -5,7 +5,7 @@ from users import User, create_user, login, check_credentials, account, user_acc
 from tasks import Task, create_task, tasks_list, task_object_list, task_id
 
 
-def creating_from_file(filename: str, classname) -> None:
+def creating_from_file(filename: str, class_name: type) -> None:
     if os.path.exists(filename):
         with open(filename) as saved:
             saved_from_file = saved.readlines()
@@ -13,13 +13,12 @@ def creating_from_file(filename: str, classname) -> None:
         open(filename, "w").close()
         for string in saved_from_file:
             args = string.split()
-            args[0] = classname(*args)
+            args[0] = class_name(*args)
 
 
 if __name__ == '__main__':
     creating_from_file('saved_tasks.txt', Task)
     creating_from_file('saved_users.txt', User)
-    create_task()
     welcome()
 
 # TASK1 kuhyjmbgtf 22.01.22 completed Ivan Irina
