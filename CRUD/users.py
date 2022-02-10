@@ -1,9 +1,11 @@
 import datetime
 import enum
 import uuid
-from tasks import task_object_list, tasks_list
+from tasks import task_object_list, tasks_list, overwriting_tasks_information, Task, create_task
+
 users_list = []
 user_object_list = []
+
 
 def welcome() -> None:
     print('WELCOME TO MY LITTLE TRAINEE \'JIRA\' :)\n', '*' * 40,
@@ -11,12 +13,12 @@ def welcome() -> None:
     command = input('Log in to use the program\n[C]reate user\n[L]ogin\n[V]iew common statistics\n').upper()
     while command != 'C' and command != 'L' and command != 'V':
         command = input('Input the right command: C - create,  L - login or V - view common statistics').upper()
-    if command == 'C':
+    if command == WelcomeInput.create_user.value:
         create_user()
         print(users_list)
-    if command == 'L':
+    if command == WelcomeInput.login.value:
         login()
-    if command == 'V':
+    if command == WelcomeInput.view_statistics.value:
         inprogrrss_count = 0
         for task in task_object_list:
             if task.status == 'inprogress':
@@ -39,6 +41,7 @@ def welcome() -> None:
               '\nNumber of “in progress” tasks   -   ', inprogrrss_count,
               '\nTop user with the biggest number of completed tasks   -   ', leader)
         welcome()
+
 
 class User:
 
@@ -124,6 +127,28 @@ class Role(enum.Enum):
     admin = 2
 
 
+class WelcomeInput(enum.Enum):
+    create_user = 'C'
+    login = 'L'
+    view_statistics = 'V'
+
+
+class AccountInput(enum.Enum):
+    my_created_tasks = 'M'
+    work = 'W'
+    change = 'C'
+    logout = 'L'
+    delete = 'D'
+    yes = 'Y'
+    no = 'N'
+    edit = 'E'
+    view = 'V'
+    title = 'T'
+    description = 'D'
+    status = 'S'
+    assignee = 'A'
+
+
 def login():
     user_name = input('Input the USER name: ')
     while user_name not in users_list:
@@ -153,24 +178,18 @@ def check_credentials(user_name, user_password) -> None:
 
 
 def account(user: User):
-    with open('saved_tasks.txt') as saved_tasks:
-        saved_tasks_from_file = saved_tasks.readlines()
-    saved_tasks_from_file = list(map(lambda s: s.strip(), saved_tasks_from_file))
     task_for_user = 0
     task_by_user = 0
     count = -1
     tasks_for_user = []
     tasks_by_user = []
-    for task in saved_tasks_from_file:
+    for task in task_object_list:
         count += 1
-        task = task.split(' ')
-        if task[-1] == user.name:
+        if task.assignee == user.name:
             task_for_user += 1
             tasks_for_user.append(task_object_list[count])
-        print(user.role, type(user.role))
-        print(Role.admin, type(Role.admin))
         if user.role == Role.admin.value:
-            if task[-2] == user.name:
+            if task.reporter == user.name:
                 task_by_user += 1
                 tasks_by_user.append(task_object_list[count])
     if user.role == Role.admin.value:
@@ -189,24 +208,24 @@ def account(user: User):
 def user_account(user: User, tasks_for_user) -> None:
     menu = input(f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [W]ork on a task\n   -   [C]hange USER information\n'
                  f'   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter (w/c/l/d): ').upper()
-    if menu == 'W':
+    if menu == AccountInput.work.value:
         work_on_task(tasks_for_user, user)
-    if menu == 'C':
+    if menu == AccountInput.change.value:
         change_user_information(user)
         overwriting_users_information()
         account(user)
-    if menu == 'L':
+    if menu == AccountInput.logout.value:
         return welcome()
-    if menu == 'D':
+    if menu == AccountInput.delete.value:
         user_object_list.remove(user)
         del user
         overwriting_users_information()
 
 
 def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
-    print(tasks_by_user, type(tasks_by_user))
+    print(tasks_by_user)
     menu = input(' - [V]iew task\n - [E]dit task\n - [D]elete task\nInput the first letter:  ').upper()
-    if menu == 'V':
+    if menu == AccountInput.view.value:
         choice = None
         while choice == None:
             try:
@@ -220,19 +239,19 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
                        f' \n[S]tatus: {tasks_by_user[choice].status} \n[A]ssignee: {tasks_by_user[choice].assignee} \n'
                        f'Creation time : {tasks_by_user[choice].time_of_creation} (immutable parameter)\nInput the '
                        f'first letter of the parameter you would like to change:  ').upper()
-        if change == 'T':
+        if change == AccountInput.title.value:
             tasks_by_user[choice].title = input('Input the new title: ')
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
-        if change == 'D':
+        if change == AccountInput.description.value:
             tasks_by_user[choice].description = input('Input the new description: ')
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
-        if change == 'S':
+        if change == AccountInput.status.value:
             tasks_by_user[choice].status = input('Input the new status (created, accepted, inprogress or completed): ')
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
-        if change == 'A':
+        if change == AccountInput.assignee.value:
             tasks_by_user[choice].assignee = input('Input the new assignee: ')
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
-    if menu == 'D':
+    if menu == AccountInput.delete.value:
         choice = None
         while choice == None:
             try:
@@ -245,15 +264,15 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
                         f'{tasks_by_user[choice].time_of_creation} \nReporter: {tasks_by_user[choice].reporter} \n'
                         f'Are you sure, you want to DELETE this task?'
                         f' (input Y to DELETE or N to return back): ').upper()
-        if choice1 == 'Y':
+        if choice1 == AccountInput.yes.value:
             for task in task_object_list:
                 if task == tasks_by_user[choice]:
                     del task
             tasks_by_user.pop(choice)
             overwriting_tasks_information()
-        if choice1 == 'N':
+        if choice1 == AccountInput.no.value:
             return admin_account(user, tasks_by_user, tasks_for_user)
-    if menu == 'E':
+    if menu == AccountInput.edit.value:
         create_task()
         return admin_account(user, tasks_by_user, tasks_for_user)
 
@@ -271,20 +290,29 @@ def admin_account(user: User, tasks_by_user, tasks_for_user) -> None:
         f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [M]y created tasks\n   -   [W]ork on a task\n   -   [C]hange USER '
         f'information\n   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter '
         f'(m/w/c/l/d): ').upper()
-    if menu == 'M':
+    if menu == AccountInput.my_created_tasks.value:
         admin_tasks(user, tasks_by_user, tasks_for_user)
-    if menu == 'W':
+    if menu == AccountInput.work.value:
         work_on_task(tasks_for_user, user)
-    if menu == 'C':
+    if menu == AccountInput.change.value:
         change_user_information(user)
         overwriting_users_information()
         account(user)
-    if menu == 'L':
+    if menu == AccountInput.logout.value:
         return welcome()
-    if menu == 'D':
+    if menu == AccountInput.delete.value:
         user_object_list.remove(user)
         del user
         overwriting_users_information()
+
+
+class ChangeUserInfo(enum.Enum):
+    name = 'N'
+    password = 'PA'
+    company = 'C'
+    email = 'E'
+    position = 'PO'
+    role = 'R'
 
 
 def change_user_information(user) -> None:
@@ -292,10 +320,10 @@ def change_user_information(user) -> None:
           f'\n[C]ompany   -   {user.company}\n[E]mail   -   {user.email}\n[PO]sition   -   {user.position}'
           f'\n[R]ole   -   {user.role}\nTime of creation   -   {user.time_of_creation} (immutable parameter)')
     choice = input('Input first letter(s) of parameter you want to change ( n / pa / c / e / po / r )').upper()
-    if choice == 'N':
+    if choice == ChangeUserInfo.name.value:
         name = input('Input the new USER name: ')
         user.name = name
-    if choice == 'PA':
+    if choice == ChangeUserInfo.password.value:
         old_password = user_password = ''
         user_password2 = ' '
         while old_password != user.password:
@@ -310,23 +338,23 @@ def change_user_information(user) -> None:
             user.password = user_password
             overwriting_users_information()
             account(user)
-    if choice == 'C':
+    if choice == ChangeUserInfo.company.value:
         company = input('Input the new USER company: ')
         user.company = company
-    if choice == 'E':
+    if choice == ChangeUserInfo.email.value:
         email = input('Input the new USER email: ')
         user.email = email
-    if choice == 'PO':
+    if choice == ChangeUserInfo.position.value:
         position = input('Input the new USER position: ')
         user.position = position
-    if choice == 'R':
+    if choice == ChangeUserInfo.role.value:
         role = ''
-        while role != 1 and role != 2:
+        while role != Role.user.value and role != Role.admin.value:
             role = int(input('Input the new USER role: 1 - user or 2 - admin'))
             urole = None
-            if role == 1:
+            if role == Role.user.value:
                 urole = Role.user.value
-            if role == 2:
+            if role == Role.admin.value:
                 urole = Role.admin.value
             user.role = urole
 
@@ -347,20 +375,20 @@ def work_on_task(tasks_for_user, user) -> None:
             choice = int(
                 input('Invalid input! Input the number of the task you would like to work on (starting from 0) :'))
     choice1 = ''
-    while choice1 != 'y' and choice1 != 'n':
+    while choice1 != AccountInput.yes.value and choice1 != AccountInput.no.value:
         choice1 = input(f'Title: {tasks_for_user[choice].title} \nDescription: {tasks_for_user[choice].description} \n'
                         f'Task status: {tasks_for_user[choice].status} \nCreation_time : '
                         f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter} \n'
                         f'Do you want to change the status of this task? (input Y to change the status or N to return '
                         f'back): ').upper()
-    if choice1 == 'Y':
+    if choice1 == AccountInput.yes.value:
         tasks_for_user[choice].status = input('Input the new status (created, accepted, inprogress or completed): ')
         overwriting_tasks_information()
         print(f'INFORMATION UPDATED.\nTitle: {tasks_for_user[choice].title} \nDescription: '
               f'{tasks_for_user[choice].description} \nTask status: {tasks_for_user[choice].status} \nCreation_time : '
               f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter}')
         account(user)
-    if choice1 == 'N':
+    if choice1 == AccountInput.no.value:
         account(user)
 
 
@@ -372,12 +400,3 @@ def overwriting_users_information() -> None:
                 saved.write("%s " % item)
             saved.write('\n')
     print('Information successfully updated.')
-
-
-def overwriting_tasks_information() -> None:
-    with open('saved_tasks.txt', "w") as saved:
-        for task in task_object_list:
-            for item in [task.title, task.description, task.time_of_creation, task.status, task.reporter,
-                         task.assignee]:
-                saved.write("%s " % item)
-            saved.write('\n')

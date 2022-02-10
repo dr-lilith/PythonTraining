@@ -49,3 +49,12 @@ def create_task() -> Task:
     reporter = _get_task_field('reporter')
     assignee = _get_task_field('assignee')
     return Task(title, description, time_of_creation, status, reporter, assignee)
+
+
+def overwriting_tasks_information() -> None:
+    with open('saved_tasks.txt', "w") as saved:
+        for task in task_object_list:
+            for item in [task.title, task.description, task.time_of_creation, task.status, task.reporter,
+                         task.assignee]:
+                saved.write("%s " % item)
+            saved.write('\n')
