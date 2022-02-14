@@ -1,19 +1,18 @@
 import datetime
 import uuid
+import enum
 
 tasks_list = []
 task_object_list = []
-task_id: int = 0
 
 
 class Task:
-    def __init__(self, title, description, time_of_creation, status, reporter, assignee) -> None:
+    def __init__(self, title: str, description: str, time_of_creation: datetime, status: str, reporter: str,
+                 assignee: str) -> None:
         self.title = title
         self.description = description
         self.time_of_creation = time_of_creation
-        global task_id
         self.id = uuid.uuid4()
-        task_id += 1
         self.reporter = reporter
         self.status = status
         self.assignee = assignee
@@ -30,28 +29,33 @@ class Task:
 
 
 def create_task() -> Task:
-    global task_id
-    task_id += 1
-
-    def _get_task_field(field_name):
-        field = None
-        while not field:
-            field = input('Input the TASK {} '.format(field_name))
-            for i in field:
-                if i == ' ':
-                    field = field.replace(i, '')
-        return field
-
-    title = _get_task_field('title')
-    description = _get_task_field('description')
+    title = get_field('title')
+    description = get_field('description')
     time_of_creation = datetime.datetime.utcnow()
-    status = 'created'
-    reporter = _get_task_field('reporter')
-    assignee = _get_task_field('assignee')
+    status = TaskStatus.created.value
+    reporter = get_field('reporter')
+    assignee = get_field('assignee')
     return Task(title, description, time_of_creation, status, reporter, assignee)
 
 
-def overwriting_tasks_information() -> None:
+def get_field(field_name) -> str:
+    field = None
+    while not field:
+        field = input('Input the {} '.format(field_name))
+        for i in field:
+            if i == ' ':
+                field = field.replace(i, '')
+    return field
+
+
+class TaskStatus(enum.Enum):
+    created = 'created'
+    accepted = 'accepted'
+    inprogress = 'inprogress'
+    completed = 'completed'
+
+
+def overwrite_tasks_information() -> None:
     with open('saved_tasks.txt', "w") as saved:
         for task in task_object_list:
             for item in [task.title, task.description, task.time_of_creation, task.status, task.reporter,

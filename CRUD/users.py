@@ -1,7 +1,7 @@
 import datetime
 import enum
 import uuid
-from tasks import task_object_list, tasks_list, overwriting_tasks_information, Task, create_task
+from tasks import task_object_list, tasks_list, overwrite_tasks_information, Task, create_task, TaskStatus, get_field
 
 users_list = []
 user_object_list = []
@@ -10,9 +10,9 @@ user_object_list = []
 def welcome() -> None:
     print('WELCOME TO MY LITTLE TRAINEE \'JIRA\' :)\n', '*' * 40,
           '\nTo select, input the first letter of the selected command')
-    command = input('Log in to use the program\n[C]reate user\n[L]ogin\n[V]iew common statistics\n').upper()
-    while command != 'C' and command != 'L' and command != 'V':
-        command = input('Input the right command: C - create,  L - login or V - view common statistics').upper()
+    command: str = input('Log in to use the program\n[C]reate user\n[L]ogin\n[V]iew common statistics\n').upper()
+    while command not in [WelcomeInput.create_user.value, WelcomeInput.login.value, WelcomeInput.view_statistics.value]:
+        command: str = input('Input the right command: C - create,  L - login or V - view common statistics').upper()
     if command == WelcomeInput.create_user.value:
         create_user()
         print(users_list)
@@ -21,12 +21,12 @@ def welcome() -> None:
     if command == WelcomeInput.view_statistics.value:
         inprogrrss_count = 0
         for task in task_object_list:
-            if task.status == 'inprogress':
+            if task.status == TaskStatus.inprogress.value:
                 inprogrrss_count += 1
         list_assignee = []
         dict_assignee = {}
         for task in task_object_list:
-            if task.status == 'completed':
+            if task.status == TaskStatus.completed.value:
                 list_assignee.append(task.assignee)
         for user in user_object_list:
             dict_assignee[user.name] = list_assignee.count(user.name)
@@ -45,7 +45,8 @@ def welcome() -> None:
 
 class User:
 
-    def __init__(self, name, password, company, email, position, time_of_creation, urole) -> None:
+    def __init__(self, name: str, password: str, company: str, email: str, position: str, time_of_creation: datetime,
+                 urole: str) -> None:
         self.name = name
         self.password = password
         self.company = company
@@ -62,40 +63,24 @@ class User:
                 saved_users.write(f'{item} ')
 
             saved_users.write('\n')
-        personal_tasks(self)
+        User.personal_tasks(self)
 
     def __repr__(self) -> str:
         return self.name
 
-    def create_task(self):
-        global task_id
-        task_object = 'task' + str(task_id)
-        task_id += 1
-        tasks_list.append(task_object)
-        title = input('Input the title of the task: ')
-        description = input('Input the description of the task: ')
-        reporter = input('Input the reporter of the task: ')
-        assignee = input('Input the assignee of the task: ')
-        task_object = Task(title, description, reporter, assignee)
-        return task_object
+    def personal_tasks(self) -> None:
+        my_tasks = []
+        for task in task_object_list:
+            if task.assignee == self.name:
+                my_tasks.append(task)
 
 
 def create_user() -> None:
-    def _get_user_field(field_name) -> str:
-        field = None
-
-        while not field:
-            field = input('Input the USER {} '.format(field_name))
-            for i in field:
-                if i == ' ':
-                    field = field.replace(i, '')
-        return field
-
     def _get_user_password() -> str:
         user_password = None
         while not user_password:
-            user_password = input('What is the user password? ')
-            user_password2 = input('Repeat your password: ')
+            user_password: str = input('What is the user password? ')
+            user_password2: str = input('Repeat your password: ')
             if user_password != user_password2:
                 print('Passwords mismatch. Try again ')
                 user_password = None
@@ -104,21 +89,21 @@ def create_user() -> None:
                 break
         return user_password
 
-    name = _get_user_field('name')
+    name = get_field('name')
     password = _get_user_password()
-    company = _get_user_field('company')
-    email = _get_user_field('email')
-    position = _get_user_field('position')
+    company = get_field('company')
+    email = get_field('email')
+    position = get_field('position')
     time_of_creation = datetime.datetime.utcnow()
     urole = None
     while not urole:
         input_role = int(input('Input the role: 1 - user  2 - admin'))
-        if input_role == 1:
+        if input_role == Role.user.value:
             urole = Role.user.value
-        if input_role == 2:
+        if input_role == Role.admin.value:
             urole = Role.admin.value
 
-    name = User(name, password, company, email, position, time_of_creation, urole)
+    name = User(name, password, company, email, position, time_of_creation, str(urole))
     return welcome()
 
 
@@ -150,14 +135,14 @@ class AccountInput(enum.Enum):
 
 
 def login():
-    user_name = input('Input the USER name: ')
+    user_name: str = input('Input the USER name: ')
     while user_name not in users_list:
-        user_name = input(
+        user_name: str = input(
             'Sorry, this user doesn\'t exists. If you want to exit, just input exit instead of user name. Input the '
             'USER name: ')
         if user_name == 'exit':
             return welcome()
-    user_password = input('Input the USER password: ')
+    user_password: str = input('Input the USER password: ')
     return check_credentials(user_name, user_password)
 
 
@@ -167,7 +152,7 @@ def check_credentials(user_name, user_password) -> None:
             print(f'You\'ve successfully logged in! Welcome, {user.name} :)')
             return account(user)
         while user.name == user_name and user.password != user_password:
-            user_password = input(
+            user_password: str = input(
                 'Sorry, this password is wrong. If you want to exit, just input exit instead of user password. Input '
                 'the USER password: ')
             if user.name == user_name and user.password == user_password:
@@ -206,25 +191,25 @@ def account(user: User):
 
 
 def user_account(user: User, tasks_for_user) -> None:
-    menu = input(f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [W]ork on a task\n   -   [C]hange USER information\n'
-                 f'   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter (w/c/l/d): ').upper()
+    menu: str = input(f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [W]ork on a task\n   -   [C]hange USER information\n'
+                      f'   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter (w/c/l/d): ').upper()
     if menu == AccountInput.work.value:
         work_on_task(tasks_for_user, user)
     if menu == AccountInput.change.value:
         change_user_information(user)
-        overwriting_users_information()
+        overwrite_users_information()
         account(user)
     if menu == AccountInput.logout.value:
         return welcome()
     if menu == AccountInput.delete.value:
         user_object_list.remove(user)
         del user
-        overwriting_users_information()
+        overwrite_users_information()
 
 
 def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
     print(tasks_by_user)
-    menu = input(' - [V]iew task\n - [E]dit task\n - [D]elete task\nInput the first letter:  ').upper()
+    menu: str = input(' - [V]iew task\n - [E]dit task\n - [D]elete task\nInput the first letter:  ').upper()
     if menu == AccountInput.view.value:
         choice = None
         while choice == None:
@@ -235,10 +220,11 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
                 choice = int(
                     input(
                         'Input the number of the task, information of which you would like to view(starting from 0): '))
-        change = input(f' \n[T]itle: {tasks_by_user[choice].title} \n[D]escription: {tasks_by_user[choice].description}'
-                       f' \n[S]tatus: {tasks_by_user[choice].status} \n[A]ssignee: {tasks_by_user[choice].assignee} \n'
-                       f'Creation time : {tasks_by_user[choice].time_of_creation} (immutable parameter)\nInput the '
-                       f'first letter of the parameter you would like to change:  ').upper()
+        change: str = input(
+            f' \n[T]itle: {tasks_by_user[choice].title} \n[D]escription: {tasks_by_user[choice].description}'
+            f' \n[S]tatus: {tasks_by_user[choice].status} \n[A]ssignee: {tasks_by_user[choice].assignee} \n'
+            f'Creation time : {tasks_by_user[choice].time_of_creation} (immutable parameter)\nInput the '
+            f'first letter of the parameter you would like to change:  ').upper()
         if change == AccountInput.title.value:
             tasks_by_user[choice].title = input('Input the new title: ')
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
@@ -253,23 +239,24 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
             after_admin_editing(user, tasks_by_user, tasks_for_user, choice)
     if menu == AccountInput.delete.value:
         choice = None
-        while choice == None:
+        while not choice:
             try:
                 choice = int(input('Input the number of the task you want to delete (starting from 0) : '))
             except ValueError:
                 choice = int(
                     input('Input the number of the task you want to delete (starting from 0) : '))
-        choice1 = input(f'Title: {tasks_by_user[choice].title} \nDescription: {tasks_by_user[choice].description} \n'
-                        f'Task status: {tasks_by_user[choice].status} \nCreation_time : '
-                        f'{tasks_by_user[choice].time_of_creation} \nReporter: {tasks_by_user[choice].reporter} \n'
-                        f'Are you sure, you want to DELETE this task?'
-                        f' (input Y to DELETE or N to return back): ').upper()
+        choice1: str = input(
+            f'Title: {tasks_by_user[choice].title} \nDescription: {tasks_by_user[choice].description} \n'
+            f'Task status: {tasks_by_user[choice].status} \nCreation_time : '
+            f'{tasks_by_user[choice].time_of_creation} \nReporter: {tasks_by_user[choice].reporter} \n'
+            f'Are you sure, you want to DELETE this task?'
+            f' (input Y to DELETE or N to return back): ').upper()
         if choice1 == AccountInput.yes.value:
             for task in task_object_list:
                 if task == tasks_by_user[choice]:
                     del task
             tasks_by_user.pop(choice)
-            overwriting_tasks_information()
+            overwrite_tasks_information()
         if choice1 == AccountInput.no.value:
             return admin_account(user, tasks_by_user, tasks_for_user)
     if menu == AccountInput.edit.value:
@@ -278,7 +265,7 @@ def admin_tasks(user: User, tasks_by_user, tasks_for_user) -> None:
 
 
 def after_admin_editing(user, tasks_by_user, tasks_for_user, choice) -> None:
-    overwriting_tasks_information()
+    overwrite_tasks_information()
     print(f'INFORMATION UPDATED.\nTitle: {tasks_by_user[choice].title} \nDescription: '
           f'{tasks_by_user[choice].description} \nTask status: {tasks_by_user[choice].status} \nReporter: '
           f'{tasks_by_user[choice].reporter} \nCreation time : {tasks_by_user[choice].time_of_creation}')
@@ -286,7 +273,7 @@ def after_admin_editing(user, tasks_by_user, tasks_for_user, choice) -> None:
 
 
 def admin_account(user: User, tasks_by_user, tasks_for_user) -> None:
-    menu = input(
+    menu: str = input(
         f'THE MAIN MENU. CHOOSE OPERATION: \n   -   [M]y created tasks\n   -   [W]ork on a task\n   -   [C]hange USER '
         f'information\n   -   [L]og out\n   -   [D]elete account (delete this user)\nInput 1 letter '
         f'(m/w/c/l/d): ').upper()
@@ -296,14 +283,14 @@ def admin_account(user: User, tasks_by_user, tasks_for_user) -> None:
         work_on_task(tasks_for_user, user)
     if menu == AccountInput.change.value:
         change_user_information(user)
-        overwriting_users_information()
+        overwrite_users_information()
         account(user)
     if menu == AccountInput.logout.value:
         return welcome()
     if menu == AccountInput.delete.value:
         user_object_list.remove(user)
         del user
-        overwriting_users_information()
+        overwrite_users_information()
 
 
 class ChangeUserInfo(enum.Enum):
@@ -319,51 +306,40 @@ def change_user_information(user) -> None:
     print(f'Current user information: \n[N]ame   -   {user.name}\n[PA]ssword   -   ', len(user.password) * '*',
           f'\n[C]ompany   -   {user.company}\n[E]mail   -   {user.email}\n[PO]sition   -   {user.position}'
           f'\n[R]ole   -   {user.role}\nTime of creation   -   {user.time_of_creation} (immutable parameter)')
-    choice = input('Input first letter(s) of parameter you want to change ( n / pa / c / e / po / r )').upper()
+    choice: str = input('Input first letter(s) of parameter you want to change ( n / pa / c / e / po / r )').upper()
     if choice == ChangeUserInfo.name.value:
-        name = input('Input the new USER name: ')
+        name: str = input('Input the new USER name: ')
         user.name = name
     if choice == ChangeUserInfo.password.value:
         old_password = user_password = ''
         user_password2 = ' '
         while old_password != user.password:
-            old_password = input('In order to change password, input your PASSWORD or exit to return: ')
+            old_password: str = input('In order to change password, input your PASSWORD or exit to return: ')
             if old_password == 'exit':
                 return account(user)
             while user_password != user_password2:
-                user_password = input('Input your new password: ')
-                user_password2 = input('Repeat your new password: ')
+                user_password: str = input('Input your new password: ')
+                user_password2: str = input('Repeat your new password: ')
                 if user_password != user_password2:
                     print('Passwords mismatch. Try again.')
             user.password = user_password
-            overwriting_users_information()
+            overwrite_users_information()
             account(user)
     if choice == ChangeUserInfo.company.value:
-        company = input('Input the new USER company: ')
+        company: str = input('Input the new USER company: ')
         user.company = company
     if choice == ChangeUserInfo.email.value:
-        email = input('Input the new USER email: ')
+        email: str = input('Input the new USER email: ')
         user.email = email
     if choice == ChangeUserInfo.position.value:
-        position = input('Input the new USER position: ')
+        position: str = input('Input the new USER position: ')
         user.position = position
     if choice == ChangeUserInfo.role.value:
         role = ''
         while role != Role.user.value and role != Role.admin.value:
             role = int(input('Input the new USER role: 1 - user or 2 - admin'))
-            urole = None
-            if role == Role.user.value:
-                urole = Role.user.value
-            if role == Role.admin.value:
-                urole = Role.admin.value
-            user.role = urole
-
-
-def personal_tasks(self) -> None:
-    my_tasks = []
-    for task in task_object_list:
-        if task.assignee == self.name:
-            my_tasks.append(task)
+            if role == Role.user.value or role == Role.admin.value:
+                user.role = role
 
 
 def work_on_task(tasks_for_user, user) -> None:
@@ -376,14 +352,15 @@ def work_on_task(tasks_for_user, user) -> None:
                 input('Invalid input! Input the number of the task you would like to work on (starting from 0) :'))
     choice1 = ''
     while choice1 != AccountInput.yes.value and choice1 != AccountInput.no.value:
-        choice1 = input(f'Title: {tasks_for_user[choice].title} \nDescription: {tasks_for_user[choice].description} \n'
-                        f'Task status: {tasks_for_user[choice].status} \nCreation_time : '
-                        f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter} \n'
-                        f'Do you want to change the status of this task? (input Y to change the status or N to return '
-                        f'back): ').upper()
+        choice1: str = input(
+            f'Title: {tasks_for_user[choice].title} \nDescription: {tasks_for_user[choice].description} \n'
+            f'Task status: {tasks_for_user[choice].status} \nCreation_time : '
+            f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter} \n'
+            f'Do you want to change the status of this task? (input Y to change the status or N to return '
+            f'back): ').upper()
     if choice1 == AccountInput.yes.value:
         tasks_for_user[choice].status = input('Input the new status (created, accepted, inprogress or completed): ')
-        overwriting_tasks_information()
+        overwrite_tasks_information()
         print(f'INFORMATION UPDATED.\nTitle: {tasks_for_user[choice].title} \nDescription: '
               f'{tasks_for_user[choice].description} \nTask status: {tasks_for_user[choice].status} \nCreation_time : '
               f'{tasks_for_user[choice].time_of_creation} \nReporter: {tasks_for_user[choice].reporter}')
@@ -392,7 +369,7 @@ def work_on_task(tasks_for_user, user) -> None:
         account(user)
 
 
-def overwriting_users_information() -> None:
+def overwrite_users_information() -> None:
     with open('saved_users.txt', "w") as saved:
         for user in user_object_list:
             for item in [user.name, user.password, user.company, user.email, user.position, user.time_of_creation,

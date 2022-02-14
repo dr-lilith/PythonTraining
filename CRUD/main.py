@@ -1,10 +1,11 @@
 import os
 from users import User, create_user, login, check_credentials, account, user_account, admin_account, admin_tasks, \
-    after_admin_editing, change_user_information, personal_tasks, work_on_task, overwriting_users_information, welcome
-from tasks import Task, create_task, tasks_list, task_object_list, task_id, overwriting_tasks_information
+    after_admin_editing, change_user_information, work_on_task, overwrite_users_information, welcome
+from tasks import Task, create_task, tasks_list, task_object_list, overwrite_tasks_information
+from typing import Union
 
 
-def creating_from_file(filename: str, class_name: type) -> None:
+def creating_from_file(filename: str, class_name: Union[Task, User]) -> None:
     if os.path.exists(filename):
         with open(filename) as saved:
             saved_from_file = saved.readlines()
