@@ -1,11 +1,11 @@
 import os
-from users import User, create_user, login, check_credentials, account, user_account, admin_account, admin_tasks, \
-    after_admin_editing, change_user_information, work_on_task, overwrite_users_information, welcome
+from users import User, create_user, login, check_credentials, run_users_task_info, run_user_account_menu, run_admin_account_menu, run_admin_tasks, \
+    update_after_admin_editing, change_user_information, work_on_task, overwrite_users_information, run_session
 from tasks import Task, create_task, tasks_list, task_object_list, overwrite_tasks_information
 from typing import Union
 
 
-def creating_from_file(filename: str, class_name: Union[Task, User]) -> None:
+def create_from_file(filename: str, class_name: Union[Task, User]) -> None:
     if os.path.exists(filename):
         with open(filename) as saved:
             saved_from_file = saved.readlines()
@@ -17,9 +17,9 @@ def creating_from_file(filename: str, class_name: Union[Task, User]) -> None:
 
 
 if __name__ == '__main__':
-    creating_from_file('saved_tasks.txt', Task)
-    creating_from_file('saved_users.txt', User)
-    welcome()
+    create_from_file('saved_tasks.txt', Task)
+    create_from_file('saved_users.txt', User)
+    run_session()
 
 # TASK1 kuhyjmbgtf 22.01.22 completed Ivan Irina
 # TASK2 jhmnhgbfvd 24.01.22 completed Ivan Alex
