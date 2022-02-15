@@ -1,0 +1,2 @@
+<a class="p-2 text-dark" href="{% url 'login' %}">Log In</a>               22 стр была
+<a class="btn btn-outline-primary" href="{% url 'signup' %}">Sign up</a>   25 стр была
