@@ -19,12 +19,13 @@ def add_video(request, pk):
     search_form = SearchForm()
 
     if request.method == 'POST':
+
         filled_form = VideoForm(request.POST)
         if filled_form.is_valid():
             video = Video()
             video.url = filled_form.cleaned_data['url']
             video.title = filled_form.cleaned_data['title']
-            video.you_tube_id = filled_form.cleaned_data['youtube_id']
+            video.youtube_id = filled_form.cleaned_data['youtube_id']
             video.hall = Hall.objects.get(pk=pk)
             video.save()
 
