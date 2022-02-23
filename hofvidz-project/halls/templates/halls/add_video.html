@@ -1,7 +1,7 @@
 {% extends 'halls/base.html' %}
 {% block content %}
 <div class='container'>
-<h2>Add Video</h2>
+<h2>Add Video to {{ hall.title }}</h2>
 <form method='post'>
   {% csrf_token %}
   {% load widget_tweaks %}
@@ -14,12 +14,27 @@
   </div>
   {% endfor %}
 
-  <button type='submit' value='Create Hall' class='btn btn-primary'>Create</button>
+  <button type='submit' value='Create Hall' class='btn btn-primary'>Add</button>
 </form>
-
+<br>
 <h2>OR</h2>
 <form>
-  {{ search_form }}
+  {% for field in search_form %}
+  <div class="form-group">
+    {{ field.errors }}
+    {{ field.label_tag }}
+    {% render_field field class='form-control' %}
+  </div>
+  {% endfor %}
 </form>
+<div id="search_results"></div>
+<script type="text/javascript">
+  var delayTimer;
+  $('#id_search_term').keyup(function() {
+    clearTimeout(delayTimer);
+    $('#search_results').text('Loading...');
+  });
+</script>
+
 </div>
 {% endblock %}
