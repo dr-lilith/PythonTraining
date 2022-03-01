@@ -82,7 +82,7 @@ class SignUp(generic.CreateView):
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
-        valid_form = super(SignUp, self).form_valid(form)
+        view = super(SignUp, self).form_valid(form)
         username, password = form.cleaned_data.get('username'), form.cleaned_data.get('password1')
         user = authenticate(username=username, password=password)
         login(self.request, user)
